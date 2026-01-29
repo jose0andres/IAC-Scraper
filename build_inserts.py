@@ -27,7 +27,7 @@ import re
 from pathlib import Path
 from datetime import datetime
 
-CSV_PATH = os.getenv("CSV_PATH", "assessment_plant_data.csv")
+CSV_PATH = os.getenv("CSV_PATH", "assessment_plant_data2.csv")
 OUT_SQL  = os.getenv("OUT_SQL", "assessment_bulk_insert.sql")
 BATCH_SIZE = int(os.getenv("BATCH_SIZE", "1000"))
 

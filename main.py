@@ -7,7 +7,7 @@ BP-year fallback search if an assessment's ActLog contact is missing.
 What stays the same (per your requests):
 - Column order exactly matches the SQL table (through status_cd).
 - assigned_id = assessment code (e.g., "AS0541")
-- center_id    = looked up from a map (now built from the codes file you run with).
+- center_id    = looked up from center_id_data.csv (by center symbol).
 - assessment_source_id   = 12
 - assessment_source_other= "obtained through scraping"
 - status_cd              = "active"
@@ -17,10 +17,9 @@ What stays the same (per your requests):
   fall back to Assessment sidebar if not found.
 
 NEW:
-- Center ID map is derived from the centers present in the codes input file
-  (e.g., assessments_2025.txt): unique two-letter prefixes, alphabetized, then 1..N.
-- If ActLog edit panel returns **no contact_name**, we try other **BP years** in a
-  round-robin loop across **2021..2026**, starting from our initial detected year,
+- Center ID map is read from center_id_data.csv (column: symbol -> center_id).
+- If ActLog edit panel returns **no contact_name**, we try other **ActLog years**
+  in a round-robin loop across **2021..2026**, starting from our initial detected year,
   until contact is found. The first success is used. If none found, we keep the
   original results (contact stays blank).
 """
@@ -47,12 +46,19 @@ INTERNAL_PROBE_URL = "https://iac.university/center/AS/internal"
 ASSESS_URL = "https://iac.university/center/{center}/internal/assessment/{code}/upload"
 ACTLOG_URL = "https://iac.university/center/{center}/internal/activity-log/BP{year}?edit={code}"
 
-OUT_CSV = os.getenv("OUT_CSV", "assessment_plant_data.csv")
+OUT_CSV = os.getenv("OUT_CSV", "assessment_plant_data2.csv")
 REQUEST_DELAY_SEC = float(os.getenv("REQUEST_DELAY_SEC", "0.5"))
 
 # Where to read assessment codes from
-DEFAULT_CODES_FILE = os.getenv("CODES_FILE", "assessments_2025.txt")
+DEFAULT_CODES_FILE = os.getenv("CODES_FILE", "ass.txt")
 FALLBACK_CODES_FILE = "/mnt/data/assessments_2025.txt"
+
+# Center ID lookup source
+CENTER_ID_DATA_CSV = os.getenv("CENTER_ID_DATA_CSV", "center_id_data.csv")
+
+# Optional run scoping
+SINGLE_CODE = os.getenv("SINGLE_CODE")
+LIMIT = int(os.getenv("LIMIT", "0"))
 
 # Optional override for center map via env
 CENTER_MAP_JSON_OVERRIDE = os.getenv("CENTER_ID_MAP_JSON")
@@ -173,6 +179,32 @@ def get_html(session: requests.Session, url: str) -> str:
 def center_from(code: str) -> str:
     return (code or "")[:2]
 
+def load_center_id_map_from_csv(path: str) -> Dict[str, int]:
+    if not path or not os.path.exists(path):
+        print(f"WARNING: center_id CSV not found: {path}")
+        return {}
+
+    mapping: Dict[str, int] = {}
+    with open(path, "r", encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if not row:
+                continue
+            symbol = (row.get("symbol") or row.get("center_symbol") or "").strip()
+            center_id_raw = (row.get("center_id") or row.get("id") or "").strip()
+            if not symbol or not center_id_raw:
+                continue
+            try:
+                center_id = int(center_id_raw)
+            except ValueError:
+                continue
+            mapping[symbol.upper()] = center_id
+    if mapping:
+        print(f"Loaded {len(mapping)} center IDs from {path}")
+    else:
+        print(f"WARNING: no center IDs parsed from {path}")
+    return mapping
+
 def load_codes_from_txt() -> List[str]:
     paths = [DEFAULT_CODES_FILE]
     if DEFAULT_CODES_FILE != FALLBACK_CODES_FILE:
@@ -211,20 +243,34 @@ def center_id_map_from_codes(codes: List[str]) -> Dict[str, int]:
             print(f"Ignoring invalid CENTER_ID_MAP_JSON: {e}")
     return build_center_map_from_codes(codes)
 
+def resolve_center_id(code: str, center_ids: Dict[str, int], symbols_sorted: List[str]) -> Optional[int]:
+    code_upper = (code or "").upper()
+    for symbol in symbols_sorted:
+        if code_upper.startswith(symbol):
+            return center_ids.get(symbol)
+    return center_ids.get(center_from(code_upper).upper())
+
+def resolve_center_symbol(code: str, symbols_sorted: List[str]) -> str:
+    code_upper = (code or "").upper()
+    for symbol in symbols_sorted:
+        if code_upper.startswith(symbol):
+            return symbol
+    return center_from(code_upper).upper()
+
 def variation_id_from_name(name: Optional[str]) -> Optional[int]:
     if not name:
         return None
     key = " ".join(name.split()).strip().lower()
     return VARIATION_NAME_TO_ID.get(key)
 
-_NUM_CLEAN = re.compile(r"[\$,]|(?:\b(hp|psig|sqft|hrs?|per\s+year|year)\b)", re.I)
+_NUM_CLEAN = re.compile(r"[\$,]|\b(hp|psig|sqft|hrs|per\s+year|year)\b", re.I)
 
 def strip_numeric(s: Optional[str]) -> Optional[str]:
     if not s:
         return None
     s = _NUM_CLEAN.sub("", s)
     s = " ".join(s.split())
-    m = re.search(r"-?\d+(?:\.\d+)?", s)
+    m = re.search(r"\d+(\.\d+)?", s)
     return m.group(0) if m else None
 
 def get_input_value(soup: BeautifulSoup, name_or_id: str) -> Optional[str]:
@@ -454,13 +500,14 @@ def year_from_date(date_str: Optional[str]) -> Optional[str]:
 # ------------------ Row assembly ------------------
 def assemble_row(code: str,
                  center_ids: Dict[str, int],
+                 center_symbols: List[str],
                  actlog_panel: Dict[str, Optional[str]],
                  actlog_rowdates: Dict[str, Optional[str]],
                  assess: Dict[str, Optional[str]]) -> Dict[str, Optional[str]]:
     row: Dict[str, Optional[str]] = {k: None for k in CSV_FIELDS}
 
     row["assigned_id"] = code
-    row["center_id"] = center_ids.get(center_from(code).upper())
+    row["center_id"] = resolve_center_id(code, center_ids, center_symbols)
     row["assessment_source_id"] = 12
     row["assessment_source_other"] = "obtained through scraping"
     row["status_cd"] = "active"
@@ -511,11 +558,11 @@ def assemble_row(code: str,
 
     return row
 
-# ------------------ BP-year fallback search ------------------
-def bp_year_cycle(start_year: str, allowed=("2021","2022","2023","2024","2025","2026")) -> List[str]:
+# ------------------ ActLog-year fallback search ------------------
+def bp_year_cycle(start_year: str, allowed=("2025","2026")) -> List[str]:
     """
     Return a list of BP years cycling starting at start_year, then the next, wrapping around.
-    e.g. start=2023 -> ["2023","2024","2025","2026","2021","2022"]
+    e.g. start=2026 -> ["2026","2025"]
     """
     allowed = list(allowed)
     if start_year not in allowed:
@@ -525,13 +572,25 @@ def bp_year_cycle(start_year: str, allowed=("2021","2022","2023","2024","2025","
 
 # ------------------ Main ------------------
 def main():
-    # 1) Load codes first (so we can build center map from THIS file)
+    # 1) Load codes first
     codes = load_codes_from_txt()
     if not codes:
         return
 
-    # 2) Build center map from the codes file (alphabetized two-letter prefixes → 1..N)
-    centers_map = center_id_map_from_codes(codes)
+    # Optional: restrict to one code or a limit
+    if SINGLE_CODE:
+        codes = [c for c in codes if c.upper() == SINGLE_CODE.strip().upper()]
+        if not codes:
+            print(f"ERROR: SINGLE_CODE not found in list: {SINGLE_CODE}")
+            return
+    if LIMIT > 0:
+        codes = codes[:LIMIT]
+
+    # 2) Build center map from center_id_data.csv (fallback to auto map if missing)
+    centers_map = load_center_id_map_from_csv(CENTER_ID_DATA_CSV)
+    if not centers_map:
+        centers_map = center_id_map_from_codes(codes)
+    center_symbols = sorted(centers_map.keys(), key=len, reverse=True)
 
     # 3) Session/login
     session = build_session()
@@ -548,7 +607,7 @@ def main():
 
         total = len(codes)
         for i, code in enumerate(codes, 1):
-            ctr = center_from(code)
+            ctr = resolve_center_symbol(code, center_symbols)
 
             # (A) Assessment page FIRST (for year, GI fields, fallback upload dates)
             assess_url = ASSESS_URL.format(center=ctr, code=code)
@@ -563,7 +622,7 @@ def main():
             initial_year = year_from_date(assess_fields.get("sidebar_visit_date")) or time.strftime("%Y")
             bp_candidates = bp_year_cycle(initial_year)
 
-            # (B) Try ActLog; if no contact_name, cycle BP years 2021..2026
+            # (B) Try ActLog; if no contact_name, cycle ActLog years 2025..2026
             actlog_panel: Dict[str, Optional[str]] = {}
             actlog_rowdates: Dict[str, Optional[str]] = {}
             selected_bp_year = None
@@ -586,17 +645,17 @@ def main():
                         actlog_rowdates = rd
                         selected_bp_year = y
                 except Exception as e:
-                    print(f"[{i}/{total}] {code} - ActLog error (BP{y}): {e}")
+                    print(f"[{i}/{total}] {code} - ActLog error (year {y}): {e}")
                 finally:
                     time.sleep(REQUEST_DELAY_SEC)
 
             # (C) Assemble row & write
-            row = assemble_row(code, centers_map, actlog_panel, actlog_rowdates, assess_fields)
+            row = assemble_row(code, centers_map, center_symbols, actlog_panel, actlog_rowdates, assess_fields)
             writer.writerow(row)
-            print(f"[{i}/{total}] {code} → wrote row (BP{selected_bp_year or initial_year})")
+            print(f"[{i}/{total}] {code} -> wrote row (ActLog year {selected_bp_year or initial_year})")
             time.sleep(REQUEST_DELAY_SEC)
 
-    print(f"\nDone. CSV written in assessment table order → {OUT_CSV}")
+    print(f"\nDone. CSV written in assessment table order -> {OUT_CSV}")
 
 if __name__ == "__main__":
     main()

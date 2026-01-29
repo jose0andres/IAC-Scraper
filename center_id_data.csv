@@ -1,0 +1,55 @@
+center_id,name,symbol,award_number,director_name,parent_id,status_cd,create_user,create_dt,update_user,update_dt
+1,"Test Center",TC,2022-2026,"Mr. Director",NULL,active,dan,"2026-01-21 20:17:31",NULL,NULL
+2,"Arizona State University",AS,2022-2026,"Dr. Patrick Phelan",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+3,"Colorado School of Mines",CM,2022-2026,"Timothy R. Ohno",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+4,"Georgia Institute of Technology",GT,2022-2026,"Comas Haynes",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+5,"Indiana University-Purdue University",IP,2022-2026,"Jie Chen",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+6,"Kennesaw State University",KS,2022-2026,"Amin Esmaeili",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+7,"Lehigh University",LE,2022-2026,"Dr. Alparslan Oztekin",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+8,"Louisiana State University",LS,2022-2026,"Dr. Jonathan Shi",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+9,"Louisiana Tech University",LT,2022-2026,"Henry E. Cardenas",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+10,"Michigan State University",MU,2022-2026,"Kristen Cetin",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+11,"Mississippi State University",MS,2022-2026,"Wil Whittington",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+12,"Oklahoma State University",OK,2022-2026,"Dr. Hitesh D. Vora",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+13,"Oregon State University",OR,2022-2026,"Karl Haapala",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+14,"San Diego State University",SD,2022-2026,"Dr. Asfaw Beyene",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+15,"San Francisco State University",SF,2022-2026,"Dr. Ahmad Ganji",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+16,"San Jose State University",SJ,2022-2026,"Dr. Farzan Kazemifar",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+17,"Syracuse University",SU,2022-2026,"Dr. Jackie Anderson",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+18,"Tennessee Technological University",TT,2022-2026,"Dr. Ethan Languri",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+19,"Texas A&M University, College Station",AM,2022-2026,"Bryan Rasmussen",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+20,"University of Alabama",UA,2022-2026,"Joseph Carpenter",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+21,"University of California, Irvine",CI,2022-2026,"G.P. Li",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+22,"University of Connecticut",UC,2022-2026,"Liang Zhang",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+23,"University of Dayton",UD,2022-2026,"Dr. Jun-Ki Choi",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+24,"University of Delaware",DL,2022-2026,"Keith Goossen",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+25,"University of Florida",UF,2022-2026,"Dr. S.A. Sherif",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+26,"University of Illinois, Chicago",IC,2022-2026,"Lin Li",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+27,"University of Louisville",UL,2022-2026,"William McGinley",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+28,"University of Miami",MI,2022-2026,"Dr. Ramin Moghaddass",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+29,"University of Missouri-Columbia",MZ,2022-2026,"Sanjeev Khanna",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+30,"University of Nebraskaâ€“Lincoln",NL,2022-2026,"David Yuill",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+31,"University of North Carolina, Charlotte",CC,2022-2026,"Robert Cox",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+32,"University of North Texas",NT,2022-2026,"Nourredine Boubekri",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+33,"University of Texas Rio Grande Valley",TR,2022-2026,"Alexander Domijan",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+34,"University of Utah",UU,2022-2026,"Dr. Kody Powell",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+35,"University of Washington",UW,2022-2026,"Alexander Mamishev",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+36,"University of Wisconsin, Milwaukee",WM,2022-2026,"Ryo Amano",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+37,"West Virginia University",WV,2022-2026,"Dr. Bhaskaran Gopalakrishnan",NULL,active,root@localhost,"2026-01-21 20:17:31",NULL,NULL
+38,"California State University, Northridge",CSUN,2022-2026,"G.P. Li",21,active,jose,"2026-01-21 20:17:31",NULL,NULL
+39,"Wichita State University",WSU,2022-2026,"Sanjeev Khanna",29,active,jose,"2026-01-21 20:17:31",NULL,NULL
+40,"Wichita State University",WSU,2022-2026,"Dr. Hitesh D. Vora",12,active,jose,"2026-01-21 20:17:31",NULL,NULL
+41,"Cypress College",CC,2022-2026,"G.P. Li",21,active,jose,"2026-01-21 20:17:31",NULL,NULL
+42,"Red Rocks Community College",RRCC,2022-2026,"Timothy R. Ohno",3,active,jose,"2026-01-21 20:17:31",NULL,NULL
+43,"Florida A&M University - Florida State University",FAMU-FSU,2022-2026,"Comas Haynes",4,active,jose,"2026-01-21 20:17:31",NULL,NULL
+44,"City Colleges of Chicago",CCC,2022-2026,"Lin Li",26,active,jose,"2026-01-21 20:17:31",NULL,NULL
+45,"Clark Atlanta University",CAU,2022-2026,"Amin Esmaeili",6,active,jose,"2026-01-21 20:17:31",NULL,NULL
+46,"University of Louisiana at Lafayette",ULL,2022-2026,"Henry E. Cardenas",9,active,jose,"2026-01-21 20:17:31",NULL,NULL
+47,"Grambling State University",Gram,2022-2026,"Henry E. Cardenas",9,active,jose,"2026-01-21 20:17:31",NULL,NULL
+48,"Lane Community College","Lane CC",2022-2026,"Karl Haapala",13,active,jose,"2026-01-21 20:17:31",NULL,NULL
+49,"Turabo University at Gurabo / Ana G. MÃ©ndez University",UAGM,2022-2026,"Dr. Ramin Moghaddass",28,active,jose,"2026-01-21 20:17:31",NULL,NULL
+50,"Jackson State University",JSU,2022-2026,"Wil Whittington",11,active,jose,"2026-01-21 20:17:31",NULL,NULL
+51,"Henry Ford College",HFCC,2022-2026,"Kristen Cetin",10,active,jose,"2026-01-21 20:17:31",NULL,NULL
+52,"Michigan Technological University",MTU,2022-2026,"Kristen Cetin",10,active,jose,"2026-01-21 20:17:31",NULL,NULL
+53,"University of Memphis",UM,2022-2026,"Dr. Ethan Languri",18,active,jose,"2026-01-21 20:17:31",NULL,NULL
+54,"Clarkson University",CU,2022-2026,"Dr. Jackie Anderson",17,active,jose,"2026-01-21 20:17:31",NULL,NULL
