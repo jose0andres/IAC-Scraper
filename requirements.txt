@@ -4,4 +4,6 @@ beautifulsoup4
 lxml
 tenacity
 mysql-connector-python
+openpyxl
+bcrypt
  

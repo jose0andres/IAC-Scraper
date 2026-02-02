@@ -219,7 +219,6 @@ def main():
 
     page = START_PAGE
     pages = 0
-    empty_match_pages = 0
     # We will stop when we encounter a page whose MAX year is < BUDGET_YEAR
     # (table appears to be sorted newest-to-oldest; once a page is all older, later pages will be older too)
     while pages < MAX_PAGES:
@@ -277,15 +276,6 @@ def main():
                 print(f"[page {page}] {code} - visit_date {visit_date} < {start_date}; skip")
 
             time.sleep(REQUEST_DELAY_SEC)
-
-        if len(kept) == kept_before:
-            empty_match_pages += 1
-        else:
-            empty_match_pages = 0
-
-        if empty_match_pages >= 2:
-            print(f"[page {page}] no matches after {empty_match_pages} consecutive pages; stopping crawl.")
-            break
 
         # If the newest year on this page is already below BUDGET_YEAR, remaining pages will be older -> stop.
         if page_max_year is not None and page_max_year < BUDGET_YEAR:
